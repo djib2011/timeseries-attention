@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-o', '--overlap', type=int, default=6, help='Length of overlap between input and output. '
+    parser.add_argument('-o', '--overlap', type=int, default=0, help='Length of overlap between input and output. '
                                                                      'Outsample length is overlap + 6.')
     parser.add_argument('-a', '--aug', type=float, default=0., help='Percentage of augmented series in batch')
     parser.add_argument('--debug', action='store_true', help='Run in debug mode: Print lots of diagnostic messages.')
