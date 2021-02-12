@@ -25,8 +25,8 @@ def build_model(hparams: dict) -> tf.keras.models.Model:
 
     s = hparams['layer_size']
     ratio = hparams['input_seq_length'] // hparams['output_seq_length']
-    name = 'enc{}{}_{}{}'.format(hparams['num_encoder_layers'], hparams['encoder_type'],
-                                 hparams['num_decoder_layers'], hparams['decoder_type'])
+    name = 'enc{}{}_dec{}{}'.format(hparams['num_encoder_layers'], hparams['encoder_type'],
+                                    hparams['num_decoder_layers'], hparams['decoder_type'])
 
     if hparams['encoder_type'] == 'uni':
         make_enc_layer = lambda x: tf.keras.layers.LSTM(s, return_sequences=True)(x)

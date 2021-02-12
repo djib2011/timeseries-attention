@@ -4,7 +4,7 @@ import argparse
 import h5py
 
 
-def seq2seq_generator(data_path: str, batch_size: int = 256, overlap: int = 6, shuffle: bool = True,
+def seq2seq_generator(data_path: str, batch_size: int = 256, overlap: int = 0, shuffle: bool = True,
                       augmentation: float = 0, debug: bool = False) -> tf.data.Dataset:
     """
     Factory for building TensorFlow data generators for loading time series data.
