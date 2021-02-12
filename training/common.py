@@ -136,7 +136,7 @@ def register_experiment(experiment_name: str, run_name: str, log_dir: str = './l
     :return: The experiment ID.
     """
 
-    run_hash = hash(run_name)
+    run_hash = abs(hash(run_name))
     run_id = experiment_name + '/' + str(run_hash)
 
     if not debug:
