@@ -67,10 +67,23 @@ def build_model(hparams: dict) -> tf.keras.models.Model:
         hparams['num_decoder_layers'] -= 1
         name += '_addattn'
 
-    elif hparams['attention_type'] == 'self':
+    elif hparams['attention_type'] == 'self-br':
+        # apply self-attention before reshapre
+
         dec = tf.keras.layers.Attention(use_scale=hparams['attention_scale'],
                                         dropout=hparams['attention_dropout'],
                                         causal=hparams['attention_causal'])([enc, enc])
+
+        dec = tf.keras.layers.Reshape((hparams['output_seq_length'], ratio * s))(dec)
+
+    elif hparams['attention_type'] == 'self-ar' or hparams['attention_type'] == 'self':
+        # apply self-attention after reshape
+
+        dec = tf.keras.layers.Reshape((hparams['output_seq_length'], ratio * s))(enc)
+
+        dec = tf.keras.layers.Attention(use_scale=hparams['attention_scale'],
+                                        dropout=hparams['attention_dropout'],
+                                        causal=hparams['attention_causal'])([dec, dec])
 
     for _ in range(hparams['num_decoder_layers']):
         dec = make_dec_layer(dec)
