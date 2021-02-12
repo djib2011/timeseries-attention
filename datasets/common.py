@@ -47,7 +47,7 @@ def load_data(file_pattern: str) -> (np.ndarray,) * 2:
     return train, test
 
 
-def load_test_set(data_dir: Union[Path, str] = 'data'):
+def load_test_set(data_dir: Union[Path, str] = 'data', N: int = 18):
 
     train_path = Path(data_dir) / 'Yearly-train.csv'
     test_path = Path(data_dir) / 'Yearly-test.csv'
@@ -55,7 +55,7 @@ def load_test_set(data_dir: Union[Path, str] = 'data'):
     train_set = pd.read_csv(train_path).drop('V1', axis=1)
     test_set = pd.read_csv(test_path).drop('V1', axis=1)
 
-    X_test = np.array([get_last_N(ser[1], N=18) for ser in train_set.iterrows()])
+    X_test = np.array([get_last_N(ser[1], N=N) for ser in train_set.iterrows()])
     y_test = test_set.values
 
     return X_test, y_test
