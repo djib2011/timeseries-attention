@@ -19,7 +19,7 @@ data = datasets.seq2seq_generator(config.data.path, batch_size=config.training.B
 
 hp_comb_dict = {'input_seq_length': [18],
                 'output_seq_length': [6],
-                'base_layer_size': [128],
+                'layer_size': [128],
                 'encoder_type': ['bi'],
                 'decoder_type': ['uni'],
                 'num_encoder_layers': [2],
@@ -37,7 +37,7 @@ for hp in hp_generator:
 
     run_name = '__'.join(['{}_{}'.format(k, v) for k, v in hp.items()])
 
-    run_id = training.register_experiment(experiment_name, run_name, debug=args.debug)
+    run_id = training.register_experiment(experiment_name, run_name, debug=args.debug, log_dir='/tmp')
 
     print('run name:', run_name)
     print('run id:', run_id)
@@ -45,3 +45,7 @@ for hp in hp_generator:
     training.run_training(model_gen, hp, data, run_id, num_runs=config.training.NUM_RUNS, debug=args.debug,
                           batch_size=config.training.BATCH_SIZE, epochs=config.training.EPOCHS,
                           warmup=config.training.WARMUP, patience=config.training.PATIENCE)
+
+    confirmation_id = training.register_experiment(experiment_name, run_name, debug=args.debug)
+
+    assert run_id == confirmation_id

@@ -1,5 +1,6 @@
 import tensorflow as tf
 import itertools
+import hashlib
 from typing import Union
 
 import utils
@@ -136,7 +137,8 @@ def register_experiment(experiment_name: str, run_name: str, log_dir: str = './l
     :return: The experiment ID.
     """
 
-    run_hash = abs(hash(run_name))
+    # run_hash = abs(hash(run_name))
+    run_hash = int(str(abs(int(hashlib.sha256(run_name.encode('utf-8')).hexdigest(), 16)))[:10])  # disable hash randomization
     run_id = experiment_name + '/' + str(run_hash)
 
     if not debug:
