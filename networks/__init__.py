@@ -10,9 +10,9 @@ def get(**params) -> (tf.keras.models.Model, dict):
     :return: a function that will build a tf.keras model and the dictionary with its configurations
     """
 
-    default = {'input_seq_len': 18, 'output_seq_len': 6, 'layer_size': 64, 'encoder_type': 'bi', 'num_encoder_layers': 2,
-               'decoder_type': 'lstm', 'num_decoder_layers': 1, 'attention_type': 'mul', 'attention_scale': False,
-               'attention_dropout': 0., 'attention_causal': False}
+    default = {'input_seq_length': 18, 'output_seq_length': 6, 'layer_size': 64, 'encoder_type': 'bi',
+               'num_encoder_layers': 2, 'decoder_type': 'lstm', 'num_decoder_layers': 1, 'attention_type': 'mul',
+               'attention_scale': False, 'attention_dropout': 0., 'attention_causal': False}
 
     default.update(params)
 
