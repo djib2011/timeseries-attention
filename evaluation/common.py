@@ -264,16 +264,16 @@ def create_results_df_multi_weights(results: dict, columns: list) -> pd.DataFram
 
     for column in columns + ['epoch']:
         try:
-            df[column] = df[column].apply(lambda x: x.split('_')[1])
+            df[column] = df[column].apply(lambda x: x.split('_')[-1])
         except IndexError:
             raise IndexError('Trying to split column {}'.format(column))
 
     return df
 
 
-def run_evaluation(weight_dir: str, result_dir: str, columns: list, exclude_pattern: str = None,
+def run_evaluation(experiment_name: str, columns: list, exclude_pattern: str = None,
                    return_results: bool = False, debug: bool = False, batch_size: int = 1024,
-                   inp_len: int = 18) -> Union[(dict,) * 2, None]:
+                   inp_len: int = 18) -> (dict,) * 2:
     """
     Function that handles the whole evaluation procedure for a given experiment.
 
@@ -283,9 +283,8 @@ def run_evaluation(weight_dir: str, result_dir: str, columns: list, exclude_patt
         4) Repeats steps (2) and (3) for all untracked experiments in the weight_dir
         5) Creates a DataFrame that stores the results
 
-    :param weight_dir: Directory where the trained models from the experiments are stored.
-    :param result_dir: Directory where the results will be stored, as well as the pickle file containing all previously
-                       tracked experiments.
+    :param experiment_name: name of the current experiment. Will search for weights under weights/experiment_name and
+                            will store results under results/experiment_name
     :param columns: Names of the columns for the result DataFrame.
     :param exclude_pattern: Pattern for weights to exclude from the search. Used to exclude incomplete experiments.
     :param return_results: Return the results DataFrame, instead of storing it as a CSV file.
@@ -294,6 +293,9 @@ def run_evaluation(weight_dir: str, result_dir: str, columns: list, exclude_patt
     :param inp_len: Length of the input sequences.
     :return: the results DataFrame [OPTIONAL]
     """
+
+    weight_dir = os.path.join('weights', experiment_name)
+    result_dir = os.path.join('results', experiment_name)
 
     tracked_file = (Path(result_dir) / 'tracked.pkl')
 
@@ -324,8 +326,8 @@ def run_evaluation(weight_dir: str, result_dir: str, columns: list, exclude_patt
                 print('{:>2}. {}'.format(i + 1, t))
 
     else:
-        results = evaluate_multiple_families(families, X_test, y_test, batch_size=batch_size)
-        results = decode_results(results)
+        results = evaluate_multiple_families([families[0]], X_test, y_test, batch_size=batch_size)
+        results = decode_results(results, experiment_name)
 
         if return_results:
             return results, tracked
@@ -346,7 +348,7 @@ def run_evaluation(weight_dir: str, result_dir: str, columns: list, exclude_patt
             pkl.dump(tracked, f)
 
 
-def decode_results(results, registry='./logs/registry.txt'):
+def decode_results(results, experiment_name, registry='./logs/registry.txt'):
     """
     Decode the results according to the registry.
 
@@ -360,7 +362,12 @@ def decode_results(results, registry='./logs/registry.txt'):
 
     with open(registry) as f:
         registry_mapping = {line.split(': ')[0]: line.split(': ')[1].replace('\n', '') for line in f}
+        registry_mapping = {k.split('/')[1]: v for k, v in registry_mapping.items()
+                            if k.split('/')[0] == experiment_name}
 
-    decoded_results = {registry_mapping[k]: v for k, v in results.items}
+    decode_key = lambda key: '__'.join([registry_mapping[c] if len(c) > 10 and c.isdigit()
+                                                            else c for c in key.split('__')])
+
+    decoded_results = {metric: {decode_key(k): v for k, v in values.items()} for metric, values in results.items()}
 
     return decoded_results
