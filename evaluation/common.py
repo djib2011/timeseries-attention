@@ -6,7 +6,7 @@ from pathlib import Path
 import tensorflow as tf
 import warnings
 import pickle as pkl
-from typing import Union, Sequence
+from typing import Union, Sequence, Tuple
 
 from utils import metrics
 import datasets
@@ -273,7 +273,7 @@ def create_results_df_multi_weights(results: dict, columns: list) -> pd.DataFram
 
 def run_evaluation(experiment_name: str, columns: list, exclude_pattern: str = None,
                    return_results: bool = False, debug: bool = False, batch_size: int = 1024,
-                   inp_len: int = 18) -> (dict,) * 2:
+                   inp_len: int = 18) -> Union[Tuple[dict, dict], None]:
     """
     Function that handles the whole evaluation procedure for a given experiment.
 
@@ -287,7 +287,7 @@ def run_evaluation(experiment_name: str, columns: list, exclude_pattern: str = N
                             will store results under results/experiment_name
     :param columns: Names of the columns for the result DataFrame.
     :param exclude_pattern: Pattern for weights to exclude from the search. Used to exclude incomplete experiments.
-    :param return_results: Return the results DataFrame, instead of storing it as a CSV file.
+    :param return_results: Return the results dictionary for the first experiment, used for debug purposes.
     :param debug: Option to NOT run evaluation, but instead print all tracked, untracked and undertracked experiments.
     :param batch_size: What batch size to use for the evaluation
     :param inp_len: Length of the input sequences.
@@ -365,7 +365,7 @@ def decode_results(results, experiment_name, registry='./logs/registry.txt'):
         registry_mapping = {k.split('/')[1]: v for k, v in registry_mapping.items()
                             if k.split('/')[0] == experiment_name}
 
-    decode_key = lambda key: '__'.join([registry_mapping[c] if len(c) > 10 and c.isdigit()
+    decode_key = lambda key: '__'.join([registry_mapping[c] if len(c) == 10 and c.isdigit()
                                                             else c for c in key.split('__')])
 
     decoded_results = {metric: {decode_key(k): v for k, v in values.items()} for metric, values in results.items()}
