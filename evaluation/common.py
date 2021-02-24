@@ -287,7 +287,7 @@ def run_evaluation(experiment_name: str, columns: list, exclude_pattern: str = N
                             will store results under results/experiment_name
     :param columns: Names of the columns for the result DataFrame.
     :param exclude_pattern: Pattern for weights to exclude from the search. Used to exclude incomplete experiments.
-    :param return_results: Return the results dictionary for the first experiment, used for debug purposes.
+    :param return_results: Return the results dictionary instead of storing the results DataFrame.
     :param debug: Option to NOT run evaluation, but instead print all tracked, untracked and undertracked experiments.
     :param batch_size: What batch size to use for the evaluation
     :param inp_len: Length of the input sequences.
@@ -326,7 +326,7 @@ def run_evaluation(experiment_name: str, columns: list, exclude_pattern: str = N
                 print('{:>2}. {}'.format(i + 1, t))
 
     else:
-        results = evaluate_multiple_families([families[0]], X_test, y_test, batch_size=batch_size)
+        results = evaluate_multiple_families(families, X_test, y_test, batch_size=batch_size)
         results = decode_results(results, experiment_name)
 
         if return_results:

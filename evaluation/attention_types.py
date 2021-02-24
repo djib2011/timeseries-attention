@@ -19,4 +19,4 @@ columns = ['input_len', 'output_len', 'layer_size', 'encoder_type', 'encoder_lay
            'attention_type', 'attention_scale', 'attention_dropout', 'attention_causal', 'input_length',
            'output_length', 'base_layer_size']
 
-evaluation.run_evaluation(experiment_name, return_results=True, columns=columns, debug=args.debug)
+evaluation.run_evaluation(experiment_name, columns=columns, debug=args.debug)
