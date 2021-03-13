@@ -299,6 +299,10 @@ def run_evaluation(experiment_name: str, columns: list, exclude_pattern: str = N
 
     tracked_file = (Path(result_dir) / 'tracked.pkl')
 
+    if debug:
+        print('Looking for weights under:', weight_dir)
+        print('Will store results in:', result_dir)
+
     if tracked_file.exists():
         with open(tracked_file, 'rb') as f:
             tracked = pkl.load(f)
@@ -338,6 +342,10 @@ def run_evaluation(experiment_name: str, columns: list, exclude_pattern: str = N
             df = pd.concat([df, create_results_df_multi_weights(results, columns=columns)])
         else:
             df = create_results_df_multi_weights(results, columns=columns)
+
+        print('Storing DataFrame with results in:', result_df_file)
+        print('Storing tracked runs in:', tracked_file)
+        print(os.getcwd())
 
         if not result_df_file.parent.is_dir():
             os.makedirs(result_dir)
